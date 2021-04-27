@@ -67,4 +67,5 @@ def set_data(data):
 if __name__ == "__main__":
     init_leaderboard()
 
+
     

@@ -52,13 +52,13 @@ LIFE_COLOR_BEGIN = (10, 50, 50)
 LIFE_COLOR_END = (150, 10, 10)
 MAX_MOVE_KEY = FPS
 
-
 # GAME VARIABLES
 BUBBLES = []
 KEY = None
 SCORE = 0
 LIFE = MAX_LIFE
 MOVE_KEY = None
+NEW_RECORD_INDEX = 6
 
 # ANIMATION CONTROLLER
 ANI_SCORE = 0 
@@ -70,7 +70,6 @@ CLOCK = Clock()
 
 # COUNTER
 CTR_LOSE = 0
-
 
 def init_leaderboard():
     """initialize leaderboard."""
@@ -246,7 +245,7 @@ def start_counter(counter):
     if counter == "CTR_LOSE":
         CTR_LOSE = FPS * 3
 
-def vibrate_x_offset(controller):
+def get_vibrate_x_offset(controller):
     """give a random horizontal offset.
         Args:
           controller: int.
@@ -277,7 +276,7 @@ def init_game():
     ANI_VIBRATE = 0
     ANI_KEY = 0
 
-def background_color(life, frame_count):
+def get_background_color(life, frame_count):
     """give a random horizontal offset.
         Args:
           life: int.
@@ -294,7 +293,7 @@ def background_color(life, frame_count):
     b = (b1 + (b2 - b1) * ((MAX_LIFE - life) / MAX_LIFE)) * ratio
     return(int(r), int(g), int(b))
 
-def move_key_center(ani_key, to):
+def get_move_key_center(ani_key, to):
     """give a random horizontal offset.
         Args:
           ani_key: int.
@@ -354,9 +353,9 @@ class Event_dialogue:
                             self.run = False
                             break
                 # blit background
-                draw.rect(bg, BLACK, Rect(WIN_WIDTH * 7 // 20, WIN_HEIGHT * 4 // 9, 270, 80), 0)
+                draw.rect(bg, (50, 50, 50), Rect(WIN_WIDTH * 7 // 20, WIN_HEIGHT * 4 // 9, 270, 80), 0)
                 draw.rect(bg, WHITE, Rect(WIN_WIDTH * 7 // 20, WIN_HEIGHT * 4 // 9, 270, 80), 5)
-                WIN.blit(bg, (0 + vibrate_x_offset(ANI_VIBRATE), 0))
+                WIN.blit(bg, (0, 0))
 
                 # blit pause
                 myFont = font.SysFont('microsoftjhengheimicrosoftjhengheiuibold', 32, bold=True, italic=True)
@@ -364,9 +363,6 @@ class Event_dialogue:
                 pause_rect = pause.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2)) 
                 WIN.blit(pause, pause_rect)
                 update()
-                
-
-
 
 class Bubble():
     """movable bubble with a letter and different colors for a corresponding faculty"""
@@ -431,8 +427,6 @@ class Bubble():
             result = True
         return result
 
-
-
 if __name__ == "__main__":
     while RUN:
         CLOCK.tick(FPS)
@@ -444,8 +438,7 @@ if __name__ == "__main__":
             for evnt in event.get():
                 if evnt.type == QUIT:
                     RUN = False
-                if evnt.type == MOUSEBUTTONDOWN:
-                    pass
+
                 if evnt.type == KEYDOWN:
                     pg_keys = ["K_%c" % i for i in range(97, 123)]
                     for key in pg_keys:
@@ -497,7 +490,7 @@ if __name__ == "__main__":
                 BUBBLES = TEMP_BUBBLES
 
             # background
-            BG.fill(background_color(LIFE, FRAME_COUNT))
+            BG.fill(get_background_color(LIFE, FRAME_COUNT))
 
             # draw railings
             draw.line(BG, (100, 100, 100), (WIN_WIDTH * 2 // 9, 0), (WIN_WIDTH * 2 // 9, WIN_HEIGHT), 3)
@@ -510,7 +503,7 @@ if __name__ == "__main__":
                 draw.circle(BG, bubble.color, bubble.center, bubble.radius, 0)
 
             # blit background
-            WIN.blit(BG, (0 + vibrate_x_offset(ANI_VIBRATE), 0))
+            WIN.blit(BG, (0 + get_vibrate_x_offset(ANI_VIBRATE), 0))
 
             # blit letters
             for bubble in BUBBLES:
@@ -543,10 +536,10 @@ if __name__ == "__main__":
                     else:
                         myFont = font.SysFont('microsoftjhengheimicrosoftjhengheiuibold', 100, bold=True, italic=True)
                         key = myFont.render(MOVE_KEY, True, color)
-                        key_rect = key.get_rect(center=move_key_center(ANI_KEY, to))
+                        key_rect = key.get_rect(center=get_move_key_center(ANI_KEY, to))
                     WIN.blit(key, key_rect)
 
-            # check live
+            # check life
             if LIFE <= 0:
                 start_counter("CTR_LOSE")
                 STAGE = 2
@@ -584,6 +577,7 @@ if __name__ == "__main__":
                 for i, score in enumerate(data):
                     if score < SCORE:
                         index = i
+                        NEW_RECORD_INDEX = i
                         break
                 data.insert(index, SCORE)
                 set_data(data)
@@ -596,6 +590,7 @@ if __name__ == "__main__":
                 if evet.type == QUIT:
                     RUN = False
                 if evet.type == KEYDOWN:
+                    NEW_RECORD_INDEX = 6
                     STAGE = 1
 
             # background
@@ -619,7 +614,7 @@ if __name__ == "__main__":
             data = get_data()
             for i, score in enumerate(data):
                 myFont = font.SysFont('microsoftjhengheimicrosoftjhengheiuibold', 36, bold=True, italic=True)
-                row_data = myFont.render("{:<2d} : {:>15d}".format(i + 1, score), True, WHITE)
+                row_data = myFont.render("{:<2d} : {:>15d}".format(i + 1, score), True, (255, 255, 120) if i == NEW_RECORD_INDEX else WHITE)
                 pos = (WIN_WIDTH * 4 // 13, WIN_HEIGHT * (4 + i) // 13)
                 WIN.blit(row_data, pos)
             
