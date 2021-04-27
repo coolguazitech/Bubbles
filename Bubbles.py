@@ -432,7 +432,7 @@ if __name__ == "__main__":
         CLOCK.tick(FPS)
         event_dialogue = Event_dialogue(BG)
 
-        ##### STAGE 1 #####
+        ##############################################    STAGE 1    ##############################################
 
         if STAGE == 1:
             for evnt in event.get():
@@ -489,16 +489,15 @@ if __name__ == "__main__":
                         LIFE -= 1
                 BUBBLES = TEMP_BUBBLES
 
-            # background
+            # fill background
             BG.fill(get_background_color(LIFE, FRAME_COUNT))
 
             # draw railings
             draw.line(BG, (100, 100, 100), (WIN_WIDTH * 2 // 9, 0), (WIN_WIDTH * 2 // 9, WIN_HEIGHT), 3)
             draw.line(BG, (100, 100, 100), (WIN_WIDTH * 7 // 9, 0), (WIN_WIDTH * 7 // 9, WIN_HEIGHT), 3)
             draw.line(BG, (150, 0, 0), (WIN_WIDTH * 2 // 9, WIN_HEIGHT // 9), (WIN_WIDTH * 7 // 9, WIN_HEIGHT // 9), 4)
-            # pg.draw.line(BG, (100, 100, 0), (WIN_WIDTH // 2, WIN_HEIGHT // 9 + WIN_HEIGHT // 30),  (WIN_WIDTH // 2, WIN_HEIGHT - WIN_HEIGHT // 30), 1)
 
-            # draw bubbles
+            # draw bubbles (without letters)
             for bubble in BUBBLES:
                 draw.circle(BG, bubble.color, bubble.center, bubble.radius, 0)
 
@@ -514,13 +513,13 @@ if __name__ == "__main__":
                 letter_rect = letter.get_rect(center=bubble.center)     
                 WIN.blit(letter, letter_rect)
 
-            # blit score
+            # blit scores
             myFont = font.SysFont('microsoftjhengheimicrosoftjhengheiuibold', (max(ANI_SCORE, 0) // 5) ** 2 + 30, bold=True, italic=True)
             score = myFont.render(str(SCORE), True, WHITE)
             score_rect = score.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 18)) 
             WIN.blit(score, score_rect)
 
-            # blit key
+            # blit keys
             if ANI_KEY > 0:
                 tos = ["u_left", "d_left", "d_right", "u_right"]
                 colors = [RED, BLUE, RED, BLUE]
@@ -539,37 +538,36 @@ if __name__ == "__main__":
                         key_rect = key.get_rect(center=get_move_key_center(ANI_KEY, to))
                     WIN.blit(key, key_rect)
 
-            # check life
+            # check life & switch stage
             if LIFE <= 0:
                 start_counter("CTR_LOSE")
                 STAGE = 2
 
-        ##### STAGE 2 #####
+        ##############################################    STAGE 2    ##############################################
 
         elif STAGE == 2:
             for evet in event.get():
                 if evet.type == QUIT:
                     RUN = False
 
-            # background
+            # fill background
             BG.fill(RED)
 
             # draw railings
             draw.line(BG, (80, 80, 80), (WIN_WIDTH * 2 // 9, 0), (WIN_WIDTH * 2 // 9, WIN_HEIGHT), 3)
             draw.line(BG, (80, 80, 80), (WIN_WIDTH * 7 // 9, 0), (WIN_WIDTH * 7 // 9, WIN_HEIGHT), 3)
             draw.line(BG, (150, 0, 0), (WIN_WIDTH * 2 // 9, WIN_HEIGHT // 9), (WIN_WIDTH * 7 // 9, WIN_HEIGHT // 9), 4)
-            # pg.draw.line(BG, (100, 100, 0), (WIN_WIDTH // 2, WIN_HEIGHT // 9 + WIN_HEIGHT // 30),  (WIN_WIDTH // 2, WIN_HEIGHT - WIN_HEIGHT // 30), 1)
 
             # blit background
             WIN.blit(BG, (0, 0))
 
-            # draw lose
+            # blit lose
             myFont = font.SysFont('microsoftjhengheimicrosoftjhengheiuibold', 80, bold=True, italic=True)
             lose = myFont.render("YOU LOSE", True, WHITE)
             lose_rect = lose.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2)) 
             WIN.blit(lose, lose_rect)
 
-            # counter
+            # check counter_lose & reordering ranks & initialize game
             if CTR_LOSE < 0:
                 STAGE = 0
                 data = get_data()
@@ -583,7 +581,7 @@ if __name__ == "__main__":
                 set_data(data)
                 init_game()
 
-        ##### STAGE 0 #####
+        ##############################################    STAGE 0    ##############################################
 
         elif STAGE == 0:
             for evet in event.get():
@@ -593,14 +591,13 @@ if __name__ == "__main__":
                     NEW_RECORD_INDEX = 6
                     STAGE = 1
 
-            # background
+            # fill background
             BG.fill((50, 0, 50))
 
             # draw railings
             draw.line(BG, (80, 80, 80), (WIN_WIDTH * 2 // 9, 0), (WIN_WIDTH * 2 // 9, WIN_HEIGHT), 3)
             draw.line(BG, (80, 80, 80), (WIN_WIDTH * 7 // 9, 0), (WIN_WIDTH * 7 // 9, WIN_HEIGHT), 3)
             draw.line(BG, (150, 0, 0), (WIN_WIDTH * 2 // 9, WIN_HEIGHT // 9), (WIN_WIDTH * 7 // 9, WIN_HEIGHT // 9), 4)
-            # pg.draw.line(BG, (100, 100, 0), (WIN_WIDTH // 2, WIN_HEIGHT // 9 + WIN_HEIGHT // 30),  (WIN_WIDTH // 2, WIN_HEIGHT - WIN_HEIGHT // 30), 1)
 
             # blit background
             WIN.blit(BG, (0, 0))
@@ -630,8 +627,9 @@ if __name__ == "__main__":
             start_rect = start.get_rect(center=(WIN_WIDTH * 17 // 25, WIN_HEIGHT * 19 // 20)) 
             WIN.blit(start, start_rect)
 
-        # UPDATE
+        # update game
         game_update()
 
+    # exit game
     pg_quit()
 
