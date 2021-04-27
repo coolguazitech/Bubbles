@@ -335,7 +335,7 @@ class Event_dialogue:
         self.run = True
         self.stage = 0
         self.clock = CLOCK
-    a=123
+
     def pause(self):
         global RUN
         bg = self.bg.copy()
