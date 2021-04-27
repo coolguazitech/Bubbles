@@ -329,7 +329,7 @@ def game_update():
     CTR_LOSE -= 1
 
 class Event_dialogue:
-    global CLOCK, FPS, RUN, BLACK, WIN_WIDTH, WIN_HEIGHT, WIN, WHITE
+    global CLOCK, FPS, BLACK, WIN_WIDTH, WIN_HEIGHT, WIN, WHITE
     def __init__(self, bg):
         self.bg = bg.copy()
         self.run = True
@@ -337,6 +337,7 @@ class Event_dialogue:
         self.clock = CLOCK
 
     def pause(self):
+        global RUN
         bg = self.bg.copy()
         self.run = True
         self.stage = 0
@@ -351,6 +352,7 @@ class Event_dialogue:
                     if evnt.type == KEYDOWN:
                         if evnt.key == K_SPACE:
                             self.run = False
+                            break
                 # blit background
                 draw.rect(bg, BLACK, Rect(WIN_WIDTH * 7 // 20, WIN_HEIGHT * 4 // 9, 270, 80), 0)
                 draw.rect(bg, WHITE, Rect(WIN_WIDTH * 7 // 20, WIN_HEIGHT * 4 // 9, 270, 80), 5)
@@ -362,6 +364,7 @@ class Event_dialogue:
                 pause_rect = pause.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2)) 
                 WIN.blit(pause, pause_rect)
                 update()
+                
 
 
 
