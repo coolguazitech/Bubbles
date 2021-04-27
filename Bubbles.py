@@ -225,7 +225,7 @@ def spawn_bubble():
 def start_animation(controller):
     """initialize the animation controller.
         Args:
-          controller: int.
+          controller: str.
           bubbles: list, list of instances of bubbles.
     """
     global ANI_SCORE, ANI_VIBRATE, ANI_KEY
@@ -239,7 +239,7 @@ def start_animation(controller):
 def start_counter(counter):
     """initialize the counter.
         Args:
-          counter: int.
+          counter: str.
     """
     global CTR_LOSE
     if counter == "CTR_LOSE":
@@ -260,21 +260,16 @@ def get_vibrate_x_offset(controller):
 
 def init_game():
     """initialize a new game"""
-    global BUBBLES, KEY, SCORE, LIFE, FRAME_COUNT, ANI_SCORE, ANI_VIBRATE, MAX_LIFE
+    global BUBBLES, KEY, SCORE, LIFE, FRAME_COUNT, MAX_LIFE, NEW_RECORD_INDEX
     # GAME VARIABLES
     BUBBLES = []
     KEY = None
     SCORE = 0
-    LIFE = MAX_LIFE
+    LIFE = MAX_LIFE                    
+    NEW_RECORD_INDEX = 6
 
     # PROCEDURE CONTROLLER
-    FPS = 120
     FRAME_COUNT = 0
-
-    # ANIMATION CONTROLLER
-    ANI_SCORE = 0 
-    ANI_VIBRATE = 0
-    ANI_KEY = 0
 
 def get_background_color(life, frame_count):
     """give a random horizontal offset.
@@ -567,7 +562,7 @@ if __name__ == "__main__":
             lose_rect = lose.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2)) 
             WIN.blit(lose, lose_rect)
 
-            # check counter_lose & reordering ranks & initialize game
+            # check counter_lose & reordering ranks
             if CTR_LOSE < 0:
                 STAGE = 0
                 data = get_data()
@@ -579,7 +574,6 @@ if __name__ == "__main__":
                         break
                 data.insert(index, SCORE)
                 set_data(data)
-                init_game()
 
         ##############################################    STAGE 0    ##############################################
 
@@ -588,7 +582,8 @@ if __name__ == "__main__":
                 if evet.type == QUIT:
                     RUN = False
                 if evet.type == KEYDOWN:
-                    NEW_RECORD_INDEX = 6
+                    # initialize game
+                    init_game()
                     STAGE = 1
 
             # fill background
@@ -611,7 +606,8 @@ if __name__ == "__main__":
             data = get_data()
             for i, score in enumerate(data):
                 myFont = font.SysFont('microsoftjhengheimicrosoftjhengheiuibold', 36, bold=True, italic=True)
-                row_data = myFont.render("{:<2d} : {:>15d}".format(i + 1, score), True, (255, 255, 120) if i == NEW_RECORD_INDEX else WHITE)
+                row_data = myFont.render(
+                    "{:<2d} : {:>15d}".format(i + 1, score), True, (255, 255, 120) if i == NEW_RECORD_INDEX else WHITE)
                 pos = (WIN_WIDTH * 4 // 13, WIN_HEIGHT * (4 + i) // 13)
                 WIN.blit(row_data, pos)
             
