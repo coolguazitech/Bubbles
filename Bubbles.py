@@ -46,7 +46,10 @@ BUBBLE_RADIUS_MIN = WIN_WIDTH // 36
 BUBBLE_RADIUS_MAX = WIN_WIDTH // 18
 BUBBLE_RADIUS_MEAN = BUBBLE_RADIUS_MIN + int((BUBBLE_RADIUS_MAX - BUBBLE_RADIUS_MIN) * 0.4)
 BUBBLE_RADIUS_STD = int((BUBBLE_RADIUS_MAX - BUBBLE_RADIUS_MIN) * 0.2)
-BUBBLE_RESPAWN_CENTERS = [(WIN_WIDTH * 2 // 9 + BUBBLE_RADIUS_MAX + BUBBLE_RADIUS_MAX * 2 * i, WIN_HEIGHT + BUBBLE_RADIUS_MAX) for i in range(5)]
+BUBBLE_RESPAWN_CENTERS = [(
+    WIN_WIDTH * 2 // 9 + BUBBLE_RADIUS_MAX + BUBBLE_RADIUS_MAX * 2 * i,
+    WIN_HEIGHT + BUBBLE_RADIUS_MAX
+    ) for i in range(5)]
 MAX_LIFE = 10
 LIFE_COLOR_BEGIN = (10, 50, 50)
 LIFE_COLOR_END = (150, 10, 10)
@@ -365,7 +368,8 @@ class Bubble():
         self.color = color # BLUE, RED, GREEN, YELLOW, CYAN, PURPPLE
         self.letter = letter
         self.center = center
-        self.radius = int(normal(BUBBLE_RADIUS_MEAN, BUBBLE_RADIUS_STD, BUBBLE_RADIUS_MIN, BUBBLE_RADIUS_MAX)) # radius 25 ~ 50
+        self.radius = int(
+            normal(BUBBLE_RADIUS_MEAN, BUBBLE_RADIUS_STD, BUBBLE_RADIUS_MIN, BUBBLE_RADIUS_MAX)) # radius 25 ~ 50
         self.speed = self.radius // 5 - 4 # fast 1 ~ 6 slow
         self.status = "alive" # "alive", "dead"
         self.left_prob = normal(0.1, 0.08, 0, 0.2)
@@ -509,7 +513,8 @@ if __name__ == "__main__":
                 WIN.blit(letter, letter_rect)
 
             # blit scores
-            myFont = font.SysFont('microsoftjhengheimicrosoftjhengheiuibold', (max(ANI_SCORE, 0) // 5) ** 2 + 30, bold=True, italic=True)
+            myFont = font.SysFont(
+                'microsoftjhengheimicrosoftjhengheiuibold', (max(ANI_SCORE, 0) // 5) ** 2 + 30, bold=True, italic=True)
             score = myFont.render(str(SCORE), True, WHITE)
             score_rect = score.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 18)) 
             WIN.blit(score, score_rect)
