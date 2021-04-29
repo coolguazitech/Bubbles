@@ -14,7 +14,7 @@ from numpy.random import normal as nm
 from sqlite3 import connect
 
 # VERSION
-VERSION = "1.1.2"
+VERSION = "1.1.3"
 
 # INITIALIZATION
 game_init()
@@ -51,8 +51,8 @@ BUBBLE_RESPAWN_CENTERS = [(
     WIN_HEIGHT + BUBBLE_RADIUS_MAX
     ) for i in range(5)]
 MAX_LIFE = 10
-LIFE_COLOR_BEGIN = (10, 50, 50)
-LIFE_COLOR_END = (150, 10, 10)
+LIFE_COLOR_BEGIN = (20, 120, 120)
+LIFE_COLOR_END = (200, 50, 50)
 MAX_MOVE_KEY = FPS
 
 # GAME VARIABLES
@@ -62,11 +62,13 @@ SCORE = 0
 LIFE = MAX_LIFE
 MOVE_KEY = None
 NEW_RECORD_INDEX = 6
+COMBO = None
 
 # ANIMATION CONTROLLER
 ANI_SCORE = 0 
 ANI_VIBRATE = 0
 ANI_KEY = 0
+ANI_COMBO = 0
 
 # CLOCK
 CLOCK = Clock()
@@ -231,13 +233,15 @@ def start_animation(controller):
           controller: str.
           bubbles: list, list of instances of bubbles.
     """
-    global ANI_SCORE, ANI_VIBRATE, ANI_KEY
+    global ANI_SCORE, ANI_VIBRATE, ANI_KEY, ANI_COMBO
     if controller == "ANI_SCORE":
         ANI_SCORE = int(FPS * 0.2)
     if controller == "ANI_VIBRATE":
         ANI_VIBRATE = int(FPS * 0.2)
     if controller == "ANI_KEY":
         ANI_KEY = int(FPS)
+    if controller == "ANI_COMBO":
+        ANI_COMBO = int(FPS * 0.2)
    
 def start_counter(counter):
     """initialize the counter.
@@ -263,13 +267,14 @@ def get_vibrate_x_offset(controller):
 
 def init_game():
     """initialize a new game"""
-    global BUBBLES, KEY, SCORE, LIFE, FRAME_COUNT, MAX_LIFE, NEW_RECORD_INDEX
+    global BUBBLES, KEY, SCORE, LIFE, FRAME_COUNT, MAX_LIFE, NEW_RECORD_INDEX, COMBO
     # GAME VARIABLES
     BUBBLES = []
     KEY = None
     SCORE = 0
     LIFE = MAX_LIFE                    
     NEW_RECORD_INDEX = 6
+    COMBO = None
 
     # PROCEDURE CONTROLLER
     FRAME_COUNT = 0
@@ -282,14 +287,21 @@ def get_background_color(life, frame_count):
         Return:
           color: tuple.
     """
-    global MAX_LIFE, LIFE_COLOR_BEGIN, LIFE_COLOR_END, FPS
+    global MAX_LIFE, LIFE_COLOR_BEGIN, LIFE_COLOR_END, FPS, ANI_COMBO, YELLOW, WHITE
     r1, g1, b1 = LIFE_COLOR_BEGIN
     r2, g2, b2 = LIFE_COLOR_END
-    ratio = sin(frame_count / FPS) * 0.5 + 1
+    ratio = sin(frame_count / FPS) * 0.15 + 0.85
     r = (r1 + (r2 - r1) * ((MAX_LIFE - life) / MAX_LIFE)) * ratio
     g = (g1 + (g2 - g1) * ((MAX_LIFE - life) / MAX_LIFE)) * ratio
     b = (b1 + (b2 - b1) * ((MAX_LIFE - life) / MAX_LIFE)) * ratio
-    return(int(r), int(g), int(b))
+
+    if ANI_COMBO > 0:
+        r, g, b = YELLOW if ANI_COMBO % 2 == 0 else WHITE
+        r = r * 0.7
+        g = g * 0.7
+        b = b * 0.7
+
+    return (int(r), int(g), int(b))
 
 def get_move_key_center(ani_key, to):
     """give a random horizontal offset.
@@ -317,12 +329,13 @@ def get_move_key_center(ani_key, to):
 
 def game_update():
     """update process of game in terms of FPS"""
-    global FRAME_COUNT, BUBBLES, ANI_SCORE, ANI_VIBRATE, ANI_KEY, CTR_LOSE
+    global FRAME_COUNT, BUBBLES, ANI_SCORE, ANI_VIBRATE, ANI_KEY, ANI_COMBO, CTR_LOSE
     update()
     FRAME_COUNT += 1
     ANI_SCORE -= 1
     ANI_VIBRATE -= 1
     ANI_KEY -= 1
+    ANI_COMBO -= 1
     CTR_LOSE -= 1
 
 class Event_dialogue:
@@ -459,8 +472,14 @@ if __name__ == "__main__":
                     SCORE += int((7 - shot_bubble.speed) ** 1.5 * 50)
                     BUBBLES.remove(shot_bubble)
                     start_animation("ANI_SCORE") 
-                    start_animation("ANI_KEY")       
-                    MOVE_KEY = KEY
+                    start_animation("ANI_KEY")
+                    if COMBO != KEY:
+                        COMBO = KEY
+                        MOVE_KEY = KEY
+                    else: 
+                        MOVE_KEY = "COMBO"
+                        start_animation("ANI_COMBO")  
+                        SCORE += 5000
                 else:
                     LIFE -= 1
                     start_animation("ANI_VIBRATE")
@@ -489,7 +508,8 @@ if __name__ == "__main__":
                 BUBBLES = TEMP_BUBBLES
 
             # fill background
-            BG.fill(get_background_color(LIFE, FRAME_COUNT))
+            background_color = get_background_color(LIFE, FRAME_COUNT)
+            BG.fill(background_color)
 
             # draw railings
             draw.line(BG, (100, 100, 100), (WIN_WIDTH * 2 // 9, 0), (WIN_WIDTH * 2 // 9, WIN_HEIGHT), 3)
@@ -512,10 +532,10 @@ if __name__ == "__main__":
                 letter_rect = letter.get_rect(center=bubble.center)     
                 WIN.blit(letter, letter_rect)
 
-            # blit scores
+            # blit (combo) scores
             myFont = font.SysFont(
                 'microsoftjhengheimicrosoftjhengheiuibold', (max(ANI_SCORE, 0) // 5) ** 2 + 30, bold=True, italic=True)
-            score = myFont.render(str(SCORE), True, WHITE)
+            score = myFont.render(str(SCORE), True, choice([RED, BLUE, WHITE]) if ANI_COMBO > 0 else WHITE)
             score_rect = score.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 18)) 
             WIN.blit(score, score_rect)
 
@@ -524,13 +544,13 @@ if __name__ == "__main__":
                 tos = ["u_left", "d_left", "d_right", "u_right"]
                 colors = [RED, BLUE, RED, BLUE]
                 for color, to in zip(colors, tos):
-                    if MOVE_KEY == "OOPS!" and (to == "u_left" or to == "d_left"):
+                    if (MOVE_KEY == "OOPS!" or MOVE_KEY == "COMBO") and (to == "u_left" or to == "d_left"):
                         myFont = font.SysFont('microsoftjhengheimicrosoftjhengheiuibold', 40, bold=True, italic=True)
-                        key = myFont.render(MOVE_KEY, True, RED)
+                        key = myFont.render(MOVE_KEY, True, (255, 64, 64))
                         key_rect = key.get_rect(center=(WIN_WIDTH // 9, WIN_HEIGHT // 2))
-                    elif MOVE_KEY == "OOPS!" and (to == "u_right" or to == "d_right"):
+                    elif (MOVE_KEY == "OOPS!" or MOVE_KEY == "COMBO") and (to == "u_right" or to == "d_right"):
                         myFont = font.SysFont('microsoftjhengheimicrosoftjhengheiuibold', 40, bold=True, italic=True)
-                        key = myFont.render(MOVE_KEY, True, RED)
+                        key = myFont.render(MOVE_KEY, True, (255, 64, 64))
                         key_rect = key.get_rect(center=(WIN_WIDTH * 8 // 9, WIN_HEIGHT // 2))
                     else:
                         myFont = font.SysFont('microsoftjhengheimicrosoftjhengheiuibold', 100, bold=True, italic=True)
@@ -592,7 +612,7 @@ if __name__ == "__main__":
                     STAGE = 1
 
             # fill background
-            BG.fill((50, 0, 50))
+            BG.fill((30, 0, 30))
 
             # draw railings
             draw.line(BG, (80, 80, 80), (WIN_WIDTH * 2 // 9, 0), (WIN_WIDTH * 2 // 9, WIN_HEIGHT), 3)
