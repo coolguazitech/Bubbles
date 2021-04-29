@@ -290,16 +290,16 @@ def get_background_color(life, frame_count):
     global MAX_LIFE, LIFE_COLOR_BEGIN, LIFE_COLOR_END, FPS, ANI_COMBO, YELLOW, WHITE
     r1, g1, b1 = LIFE_COLOR_BEGIN
     r2, g2, b2 = LIFE_COLOR_END
-    ratio = sin(frame_count / FPS) * 0.2 + 0.6
+    ratio = sin(frame_count / FPS) * 0.15 + 0.85
     r = (r1 + (r2 - r1) * ((MAX_LIFE - life) / MAX_LIFE)) * ratio
     g = (g1 + (g2 - g1) * ((MAX_LIFE - life) / MAX_LIFE)) * ratio
     b = (b1 + (b2 - b1) * ((MAX_LIFE - life) / MAX_LIFE)) * ratio
 
     if ANI_COMBO > 0:
         r, g, b = YELLOW if ANI_COMBO % 2 == 0 else WHITE
-        r = r * ratio * 0.8
-        g = g * ratio * 0.8
-        b = b * ratio * 0.8
+        r = r * 0.7
+        g = g * 0.7
+        b = b * 0.7
 
     return (int(r), int(g), int(b))
 
@@ -479,7 +479,6 @@ if __name__ == "__main__":
                     else: 
                         MOVE_KEY = "COMBO"
                         start_animation("ANI_COMBO")  
-                        start_animation("ANI_VIBRATE")
                         SCORE += 5000
                 else:
                     LIFE -= 1
@@ -547,11 +546,11 @@ if __name__ == "__main__":
                 for color, to in zip(colors, tos):
                     if (MOVE_KEY == "OOPS!" or MOVE_KEY == "COMBO") and (to == "u_left" or to == "d_left"):
                         myFont = font.SysFont('microsoftjhengheimicrosoftjhengheiuibold', 40, bold=True, italic=True)
-                        key = myFont.render(MOVE_KEY, True, (255, 200, 128))
+                        key = myFont.render(MOVE_KEY, True, (255, 64, 64))
                         key_rect = key.get_rect(center=(WIN_WIDTH // 9, WIN_HEIGHT // 2))
                     elif (MOVE_KEY == "OOPS!" or MOVE_KEY == "COMBO") and (to == "u_right" or to == "d_right"):
                         myFont = font.SysFont('microsoftjhengheimicrosoftjhengheiuibold', 40, bold=True, italic=True)
-                        key = myFont.render(MOVE_KEY, True, (255, 200, 128))
+                        key = myFont.render(MOVE_KEY, True, (255, 64, 64))
                         key_rect = key.get_rect(center=(WIN_WIDTH * 8 // 9, WIN_HEIGHT // 2))
                     else:
                         myFont = font.SysFont('microsoftjhengheimicrosoftjhengheiuibold', 100, bold=True, italic=True)
@@ -613,7 +612,7 @@ if __name__ == "__main__":
                     STAGE = 1
 
             # fill background
-            BG.fill((50, 0, 50))
+            BG.fill((30, 0, 30))
 
             # draw railings
             draw.line(BG, (80, 80, 80), (WIN_WIDTH * 2 // 9, 0), (WIN_WIDTH * 2 // 9, WIN_HEIGHT), 3)
