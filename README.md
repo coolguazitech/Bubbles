@@ -15,3 +15,9 @@ pip install pygame
 ```
 python Bubbles.py
 ```
+
+* You can get rid of all the current records. (highly recommend you not to do this)
+
+```
+python db_operator.py
+```
