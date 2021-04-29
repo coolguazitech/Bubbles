@@ -14,7 +14,7 @@ from numpy.random import normal as nm
 from sqlite3 import connect
 
 # VERSION
-VERSION = "1.1.3"
+VERSION = "1.1.4"
 
 # INITIALIZATION
 game_init()
