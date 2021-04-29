@@ -1,5 +1,5 @@
 # Bubbles
-## This game is made to practice typing speed. Let's shoot bubbles!
+#### This game is made to practice typing speed. Let's shoot bubbles!
 
 
 
