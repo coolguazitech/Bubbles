@@ -10,7 +10,7 @@ pip install pygame
 ```
 
 
-* Now enjoy the game!
+* Now dive in and enjoy the game!
 
 ```
 python Bubbles.py
