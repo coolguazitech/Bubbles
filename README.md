@@ -3,7 +3,7 @@
 
 
 
-* To run this, you need to install **pygame** package in your environment using **pip**.
+* To run this, you need to install **python** interpreter and **pygame** package in your environment using **pip**.
 
 ```
 pip install pygame
